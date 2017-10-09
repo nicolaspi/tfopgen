@@ -10,4 +10,7 @@ type_attrs:
   - "FT: {float, double} = DT_FLOAT"
 other_attrs: []
 doc: "How now brown cow"
+devices_compatibilities:
+  - "cpu"
+  - "gpu"
 

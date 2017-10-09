@@ -17,3 +17,6 @@ doc: >
     (2) of (L, M) sky coordinates with shape (nsrc, 2)
     (3) of frequencies,
   compute the complex phase with shape (nsrc, ntime, nbl, nchan)
+devices_compatibilities:
+  - "cpu"
+  - "gpu"
