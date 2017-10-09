@@ -8,7 +8,7 @@ from tfopgen.util import (parse_args, load_config, parse_inout,
 
 def make_template_kwargs(op_name, py_op_name,
                          project, library, op_inputs, op_outputs,
-                         op_type_attrs, op_other_attrs, op_doc, op_libs, op_devices_comps):
+                         op_type_attrs, op_other_attrs, op_doc, op_libs, op_devices_comps, op_abi):
     """
     Creates a dictionary suitable for rendering the jinja2 templates in this package
     """
@@ -63,6 +63,7 @@ def make_template_kwargs(op_name, py_op_name,
         # Building
         'extra_libs': ''.join([' -l'+l for l in op_libs]),
         'op_devices_comps' : op_devices_comps,
+        'op_abi' : op_abi,
     }
 
     template_kwargs.update({
@@ -101,7 +102,8 @@ def run(args):
     op_other_attrs = cfg.get('other_attrs', [])
     op_doc = cfg.get('doc', "Documentation")
     op_libs = cfg.get('extra_libraries_deps',[])
-    op_devices_comps = cfg.get('devices_compatibilities', [])
+    op_devices_comps = cfg.get('devices_compatibilities', ["gpu", "cpu"])
+    op_abi = cfg.get('use_old_abi', "yes")
 
 
     # Parse input ops
@@ -126,7 +128,8 @@ def run(args):
     # Create dictionary for rendering jinja2 templates
     kwargs = make_template_kwargs(op_name, py_op_name,
                                   project, library, op_inputs, op_outputs,
-                                  op_type_attrs, op_other_attrs, op_doc, op_libs, op_devices_comps)
+                                  op_type_attrs, op_other_attrs, op_doc,
+                                  op_libs, op_devices_comps, op_abi)
 
     def render(template, output):
         """ Hook to render template file to output """

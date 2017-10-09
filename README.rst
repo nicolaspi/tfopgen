@@ -80,6 +80,7 @@ For example, we can define the outline for a ``ComplexPhase`` operator in the ``
         - "gpu"
     extra_libraries_deps:
         - "m"
+    use_old_abi: yes
 
 We can then run:
 
@@ -169,6 +170,17 @@ External libraries can be added to the linker.
     extra_libraries_deps:
         - "opencv"
         - "jpeg"
+
+Note on ``gcc`` version ``>=5``: gcc uses the new C++ ABI since version 5.
+The binary pip packages available on the TensorFlow website are built
+with gcc4 that uses the older ABI. Set the option ``use_old_abi`` with the value ``yes``
+to allow the library to be compatible with the older abi.
+
+.. code:: yaml
+
+    use_old_abi: yes
+
+
 
 Finally operator documentation may also be supplied.
 
