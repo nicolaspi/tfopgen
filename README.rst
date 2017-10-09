@@ -49,6 +49,8 @@ The user should provide a YAML configuration file defining the operator:
 -  polymorphic type attributes.
 -  other attributes.
 -  documentation.
+-  devices compatibilities.
+-  optional external libraries.
 
 For example, we can define the outline for a ``ComplexPhase`` operator in the ``complex_phase.yml`` file.
 
@@ -151,6 +153,22 @@ generator code as the range of attribute behaviour is complex.
 
     op_other_attrs:
         - "iterations: int32 >= 2",
+
+Sources codes will be generated according to the specified devices.
+
+.. code:: yaml
+
+    devices_compatibilities:
+        - "cpu"
+        - "gpu"
+
+External libraries can be added to the linker.
+
+.. code:: yaml
+
+    extra_libraries_deps:
+        - "opencv"
+        - "jpeg"
 
 Finally operator documentation may also be supplied.
 
