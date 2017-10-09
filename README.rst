@@ -73,6 +73,11 @@ For example, we can define the outline for a ``ComplexPhase`` operator in the ``
         (2) of (L, M) sky coordinates with shape (nsrc, 2)
         (3) of frequencies,
       compute the complex phase with shape (nsrc, ntime, nbl, nchan)
+    devices_compatibilities:
+        - "cpu"
+        - "gpu"
+    extra_libraries_deps:
+        - "m"
 
 We can then run:
 
