@@ -24,7 +24,7 @@ class Test{{op_name}}(unittest.TestCase):
         {% set comma = last_joiner(",") -%}
         type_permutations = [
         {%- for perm in op_np_type_perms %}
-        {{ perm | replace("'", "") | indent(4, True) }}{{comma(loop.last)}}
+        {{ perm[0] | replace("'", "") | indent(4, True) }}{{comma(loop.last)}}
         {%- endfor -%}
         ]
 
@@ -63,18 +63,21 @@ class Test{{op_name}}(unittest.TestCase):
                 return self.{{library}}.{{py_op_name}}(*tf_args)
 
         # Pin operation to CPU
-        cpu_op = _pin_op('/cpu:0', *tf_args)
+        {% if "cpu" not in op_devices_comps %}#{% endif %}cpu_op = _pin_op('/cpu:0', *tf_args)
 
         # Run the op on all GPUs
-        gpu_ops = [_pin_op(d, *tf_args) for d in self.gpu_devs]
+
+        {% if "gpu" not in op_devices_comps %}#{% endif %}gpu_ops = [_pin_op(d, *tf_args) for d in self.gpu_devs]
+
+
 
         # Initialise variables
         init_op = tf.global_variables_initializer()
 
         with tf.Session() as S:
             S.run(init_op)
-            S.run(cpu_op)
-            S.run(gpu_ops)
+            {% if "cpu" not in op_devices_comps %}#{% endif %}S.run(cpu_op)
+            {% if "gpu" not in op_devices_comps %}#{% endif %}S.run(gpu_ops)
 
 if __name__ == "__main__":
     unittest.main()

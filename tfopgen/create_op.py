@@ -8,7 +8,7 @@ from tfopgen.util import (parse_args, load_config, parse_inout,
 
 def make_template_kwargs(op_name, py_op_name,
                          project, library, op_inputs, op_outputs,
-                         op_type_attrs, op_other_attrs, op_doc):
+                         op_type_attrs, op_other_attrs, op_doc, op_libs, op_devices_comps):
     """
     Creates a dictionary suitable for rendering the jinja2 templates in this package
     """
@@ -59,6 +59,10 @@ def make_template_kwargs(op_name, py_op_name,
         'project_namespace_stop': ''.join([project, NE]).upper(),
         'op_namespace_start': ''.join([project, '_', py_op_name, NB]).upper(),
         'op_namespace_stop': ''.join([project, '_', py_op_name, NE]).upper(),
+
+        # Building
+        'extra_libs': ''.join([' -l'+l for l in op_libs]),
+        'op_devices_comps' : op_devices_comps,
     }
 
     template_kwargs.update({
@@ -96,6 +100,9 @@ def run(args):
     op_type_attrs = cfg.get('type_attrs', [])
     op_other_attrs = cfg.get('other_attrs', [])
     op_doc = cfg.get('doc', "Documentation")
+    op_libs = cfg.get('extra_libraries_deps',[])
+    op_devices_comps = cfg.get('devices_compatibilities', [])
+
 
     # Parse input ops
     op_inputs = [parse_inout(i, s) for i, s in op_inputs]
@@ -119,7 +126,7 @@ def run(args):
     # Create dictionary for rendering jinja2 templates
     kwargs = make_template_kwargs(op_name, py_op_name,
                                   project, library, op_inputs, op_outputs,
-                                  op_type_attrs, op_other_attrs, op_doc)
+                                  op_type_attrs, op_other_attrs, op_doc, op_libs, op_devices_comps)
 
     def render(template, output):
         """ Hook to render template file to output """
@@ -127,10 +134,16 @@ def run(args):
             header_template = jinja_env.get_template(template)
             f.write(header_template.render(**kwargs))
 
+
+
+    if "cpu" in op_devices_comps:
+        render('cpp_header.j2', 'cpp_header_file')
+        render('cpp_source.j2', 'cpp_source_file')
+
+    if "gpu" in op_devices_comps:
+        render('cuda_header.j2', 'cuda_header_file')
+        render('cuda_source.j2', 'cuda_source_file')
+
     render('main_header.j2', 'main_header_file')
-    render('cpp_header.j2', 'cpp_header_file')
-    render('cpp_source.j2', 'cpp_source_file')
-    render('cuda_header.j2', 'cuda_header_file')
-    render('cuda_source.j2', 'cuda_source_file')
     render('test_source.j2', 'python_test_file')
     render('Makefile.j2', 'makefile')

@@ -1,0 +1,19 @@
+---
+project: contextvision_ops
+library: contextvision_ops_lib
+name: GetSlidePatch
+type_attrs:
+  - "IT: {int32, int64}"
+inputs:
+  - ["patches_positions: IT", [null,2]] # (x0, y0)
+  - ["dimension: int32", [2]] # (w,h)
+  - ["tif_files: string", [null,1]] # (file_paths)
+  - ["levels: int32", [null, 1]] # (levels)
+outputs:
+  - ["images: int32", [null, null, null, 4]] # (N, w,h,(ARGB))
+doc: >
+  Get Slide patch
+extra_libraries_deps:
+  - "openslide"
+devices_compatibilities:
+  - "cpu"
